@@ -1,10 +1,10 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jadwal Sholat Berdasarkan Lokasi</title>
+  <title>Jadwal Sholat Semua Daerah</title>
   <style>
-    /* Reset dan flex centering full-screen */
     body {
       font-family: sans-serif;
       margin: 0;
@@ -15,40 +15,45 @@
       align-items: center;
       height: 100vh;
       background: #fff;
-    }h1 {
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-#status {
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-/* Table responsif dan terpusat */
-table {
-  width: 90%;
-  max-width: 600px;
-  border-collapse: collapse;
-  margin: 0 auto;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 0.75rem;
-  text-align: center;
-}
-
-th {
-  background: #f0f0f0;
-  font-weight: bold;
-}
-
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    #status {
+      margin-bottom: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    table {
+      width: 90%;
+      max-width: 600px;
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+      font-weight: bold;
+    }
+    #countdown {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
-<h1 style="margin-bottom: 0.5rem;">Jadwal Sholat Semua daerah</h1>
+  <h1>Jadwal Sholat Semua Daerah</h1>
   <div id="status">Mencari lokasi Anda…</div>
   <table id="jadwal" style="display:none;">
     <thead>
@@ -60,16 +65,20 @@ th {
         <th>Isya</th>
       </tr>
     </thead>
-    <tbody>
-    </tbody>
-  </table>  
- <footer style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+    <tbody></tbody>
+  </table>
+
+  <div id="countdown"></div>
+
+  <footer>
+<footer style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
     <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
     <p>
       Hubungi untuk dukungan
       <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini untuk dukungan</a>
     </p>
   </footer>
+
   <script>
     const statusEl = document.getElementById('status');
     const tableEl = document.getElementById('jadwal');
@@ -98,6 +107,50 @@ th {
               <td>${t.Isha}</td>
             </tr>`;
           tableEl.style.display = '';
+
+          const prayerTimes = [
+            { name: "Subuh", time: t.Fajr },
+            { name: "Dzuhur", time: t.Dhuhr },
+            { name: "Ashar", time: t.Asr },
+            { name: "Maghrib", time: t.Maghrib },
+            { name: "Isya", time: t.Isha }
+          ];
+
+          const now = new Date();
+          let nextPrayer = null;
+
+          for (const p of prayerTimes) {
+            const [hour, minute] = p.time.split(":").map(Number);
+            const prayerTime = new Date(now);
+            prayerTime.setHours(hour, minute, 0, 0);
+            if (prayerTime > now) {
+              nextPrayer = { ...p, date: prayerTime };
+              break;
+            }
+          }
+
+          if (!nextPrayer) {
+            const [hour, minute] = t.Fajr.split(":").map(Number);
+            const prayerTime = new Date(now);
+            prayerTime.setDate(prayerTime.getDate() + 1);
+            prayerTime.setHours(hour, minute, 0, 0);
+            nextPrayer = { name: "Subuh", time: t.Fajr, date: prayerTime };
+          }
+
+          const countdownEl = document.getElementById('countdown');
+
+          function updateCountdown() {
+            const now = new Date();
+            const diff = Math.max(0, nextPrayer.date - now);
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            countdownEl.textContent = `Menuju waktu ${nextPrayer.name}: ${hours}j ${minutes}m ${seconds}d`;
+          }
+
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
         })
         .catch(() => showError('Gagal memuat jadwal sholat.'));
     }
@@ -112,5 +165,5 @@ th {
       showError('Geolocation tidak didukung browser Anda.');
     }
   </script>
-  </body>
+</body>
 </html>
