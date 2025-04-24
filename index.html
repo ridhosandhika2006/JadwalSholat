@@ -1,57 +1,147 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jadwal Sholat Semua Daerah</title>
-  <style>
-    body {
-      font-family: sans-serif;
+  <title>Jadwal Sholat Semua Daerah</title>  <style>
+    /* 1. Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    /* 2. Definisi Variabel Tema */
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #ffffff;
+      --bg-gradient-start: #eef2ff;
+      --bg-gradient-end: #e0e7ff;
+      --text-color: #1f2937;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --radius: 0.75rem;
+      --transition: 0.3s ease;
+    }
+
+    /* 3. Reset & Tipografi */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-color);
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: #fff;
+      min-height: 100vh;
+      padding: 0 1rem;
     }
+
+    /* 4. Judul dan Status */
     h1 {
+      font-size: 2rem;
+      color: var(--primary-color);
       margin-bottom: 0.5rem;
       text-align: center;
     }
     #status {
-      margin-bottom: 1rem;
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
       text-align: center;
-      font-size: 1.2rem;
     }
-    table {
-      width: 90%;
+
+    /* 5. Kartu Tabel Responsif */
+    #jadwal {
+      width: 100%;
       max-width: 600px;
-      border-collapse: collapse;
       margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--card-shadow);
+      overflow-x: auto;
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.75rem;
+    #jadwal table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    #jadwal th,
+    #jadwal td {
+      padding: 0.75rem 1rem;
       text-align: center;
+      white-space: nowrap;
     }
-    th {
-      background: #f0f0f0;
-      font-weight: bold;
+    #jadwal thead {
+      background: var(--primary-color);
     }
-    #countdown {
-      margin-top: 1rem;
-      font-size: 1.2rem;
+    #jadwal thead th {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+    #jadwal tbody tr {
+      border-bottom: 1px solid #e5e7eb;
+      transition: background var(--transition);
+    }
+    #jadwal tbody tr:hover {
+      background: rgba(79, 70, 229, 0.05);
+    }
+
+    /* 6. Tabel Hitung Mundur */
+    #countdown-table {
+      width: 100%;
+      max-width: 400px;
+      margin: 1rem auto;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--card-shadow);
+      overflow: hidden;
+    }
+    #countdown-table th,
+    #countdown-table td {
+      padding: 0.75rem 1rem;
       text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
     }
+    #countdown-table thead {
+      background: var(--primary-color);
+    }
+    #countdown-table thead th {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    /* 7. Footer */
     footer {
       margin-top: 2rem;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
+      color: #6b7280;
     }
-  </style>
-</head>
+
+    /* 8. Responsivitas Tambahan */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.75rem;
+      }
+      #jadwal th,
+      #jadwal td,
+      #countdown-table th,
+      #countdown-table td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+      }
+    }
+    @media (max-width: 400px) {
+      #jadwal th,
+      #jadwal td,
+      #countdown-table th,
+      #countdown-table td {
+        padding: 0.4rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style></head>
 <body>
   <h1>Jadwal Sholat Semua Daerah</h1>
   <div id="status">Mencari lokasi Anda…</div>
@@ -66,27 +156,31 @@
       </tr>
     </thead>
     <tbody></tbody>
-  </table>
-
-  <div id="countdown"></div>
-
-  <footer>
-<footer style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+  </table>  <!-- Tabel untuk menampilkan hitung mundur -->  <table id="countdown-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>Waktu</th>
+        <th>Sisa</th>
+      </tr>
+    </thead>
+    <tbody id="countdown-body"></tbody>
+  </table>  <footer>
     <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
     <p>
       Hubungi untuk dukungan
       <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini untuk dukungan</a>
     </p>
-  </footer>
-
-  <script>
+  </footer>  <script>
     const statusEl = document.getElementById('status');
     const tableEl = document.getElementById('jadwal');
     const tbodyEl = tableEl.querySelector('tbody');
+    const countdownTable = document.getElementById('countdown-table');
+    const countdownBody = document.getElementById('countdown-body');
 
     function showError(msg) {
       statusEl.textContent = msg;
       tableEl.style.display = 'none';
+      countdownTable.style.display = 'none';
     }
 
     function success(pos) {
@@ -137,7 +231,8 @@
             nextPrayer = { name: "Subuh", time: t.Fajr, date: prayerTime };
           }
 
-          const countdownEl = document.getElementById('countdown');
+          // Tampilkan tabel hitung mundur saja
+          countdownTable.style.display = '';
 
           function updateCountdown() {
             const now = new Date();
@@ -146,7 +241,12 @@
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-            countdownEl.textContent = `Menuju waktu ${nextPrayer.name}: ${hours}j ${minutes}m ${seconds}d`;
+            const remaining = `${hours}j ${minutes}m ${seconds}d`;
+            countdownBody.innerHTML = `
+              <tr>
+                <td>${nextPrayer.name}</td>
+                <td>${remaining}</td>
+              </tr>`;
           }
 
           updateCountdown();
@@ -164,6 +264,5 @@
     } else {
       showError('Geolocation tidak didukung browser Anda.');
     }
-  </script>
-</body>
+  </script></body>
 </html>
