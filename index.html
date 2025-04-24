@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jadwal Sholat Berdasarkan Lokasi</title>
+  <style>
+    /* Reset dan flex centering full-screen */
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff;
+    }h1 {
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+#status {
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+/* Table responsif dan terpusat */
+table {
+  width: 90%;
+  max-width: 600px;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+  </style>
+</head>
+<body>
+<h1 style="margin-bottom: 0.5rem;">Jadwal Sholat Semua daerah</h1>
+  <div id="status">Mencari lokasi Anda…</div>
+  <table id="jadwal" style="display:none;">
+    <thead>
+      <tr>
+        <th>Subuh</th>
+        <th>Dzuhur</th>
+        <th>Ashar</th>
+        <th>Maghrib</th>
+        <th>Isya</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>  
+ <footer style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+    <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
+    <p>
+      Hubungi untuk dukungan
+      <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini untuk dukungan</a>
+    </p>
+  </footer>
+  <script>
+    const statusEl = document.getElementById('status');
+    const tableEl = document.getElementById('jadwal');
+    const tbodyEl = tableEl.querySelector('tbody');
+
+    function showError(msg) {
+      statusEl.textContent = msg;
+      tableEl.style.display = 'none';
+    }
+
+    function success(pos) {
+      const { latitude, longitude } = pos.coords;
+      const timestamp = Math.floor(Date.now() / 1000);
+      statusEl.textContent = `Koordinat: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+      fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${latitude}&longitude=${longitude}&method=11`)
+        .then(res => res.json())
+        .then(json => {
+          const t = json.data.timings;
+          tbodyEl.innerHTML = `
+            <tr>
+              <td>${t.Fajr}</td>
+              <td>${t.Dhuhr}</td>
+              <td>${t.Asr}</td>
+              <td>${t.Maghrib}</td>
+              <td>${t.Isha}</td>
+            </tr>`;
+          tableEl.style.display = '';
+        })
+        .catch(() => showError('Gagal memuat jadwal sholat.'));
+    }
+
+    function error(err) {
+      showError('Tidak dapat memperoleh lokasi: ' + err.message);
+    }
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(success, error, { enableHighAccuracy: true });
+    } else {
+      showError('Geolocation tidak didukung browser Anda.');
+    }
+  </script>
+  </body>
+</html>
