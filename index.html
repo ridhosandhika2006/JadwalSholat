@@ -1,12 +1,11 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jadwal Sholat Semua Daerah</title>  <style>
-    /* 1. Import Google Fonts */
+  <title>Jadwal Sholat Semua Daerah</title>
+  <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-    /* 2. Definisi Variabel Tema */
     :root {
       --primary-color: #4f46e5;
       --secondary-color: #ffffff;
@@ -18,8 +17,6 @@
       --radius: 0.75rem;
       --transition: 0.3s ease;
     }
-
-    /* 3. Reset & Tipografi */
     * {
       margin: 0;
       padding: 0;
@@ -36,8 +33,6 @@
       min-height: 100vh;
       padding: 0 1rem;
     }
-
-    /* 4. Judul dan Status */
     h1 {
       font-size: 2rem;
       color: var(--primary-color);
@@ -49,8 +44,6 @@
       margin-bottom: 1.5rem;
       text-align: center;
     }
-
-    /* 5. Kartu Tabel Responsif */
     #jadwal {
       width: 100%;
       max-width: 600px;
@@ -84,8 +77,6 @@
     #jadwal tbody tr:hover {
       background: rgba(79, 70, 229, 0.05);
     }
-
-    /* 6. Tabel Hitung Mundur */
     #countdown-table {
       width: 100%;
       max-width: 400px;
@@ -110,16 +101,12 @@
       color: var(--secondary-color);
       font-weight: 600;
     }
-
-    /* 7. Footer */
     footer {
       margin-top: 2rem;
       text-align: center;
       font-size: 0.875rem;
       color: #6b7280;
     }
-
-    /* 8. Responsivitas Tambahan */
     @media (max-width: 600px) {
       h1 {
         font-size: 1.75rem;
@@ -141,7 +128,8 @@
         font-size: 0.75rem;
       }
     }
-  </style></head>
+  </style>
+</head>
 <body>
   <h1>Jadwal Sholat Semua Daerah</h1>
   <div id="status">Mencari lokasi Anda…</div>
@@ -156,7 +144,8 @@
       </tr>
     </thead>
     <tbody></tbody>
-  </table>  <!-- Tabel untuk menampilkan hitung mundur -->  <table id="countdown-table" style="display:none;">
+  </table>
+  <table id="countdown-table" style="display:none;">
     <thead>
       <tr>
         <th>Waktu</th>
@@ -164,13 +153,15 @@
       </tr>
     </thead>
     <tbody id="countdown-body"></tbody>
-  </table>  <footer>
+  </table>
+  <footer>
     <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
     <p>
       Hubungi untuk dukungan
       <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini untuk dukungan</a>
     </p>
-  </footer>  <script>
+  </footer>
+  <script>
     const statusEl = document.getElementById('status');
     const tableEl = document.getElementById('jadwal');
     const tbodyEl = tableEl.querySelector('tbody');
@@ -183,6 +174,16 @@
       countdownTable.style.display = 'none';
     }
 
+    function adjustTime(timeStr, offsetMinutes = 2) {
+      const [hour, minute] = timeStr.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hour);
+      date.setMinutes(minute + offsetMinutes);
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      return `${hh}:${mm}`;
+    }
+
     function success(pos) {
       const { latitude, longitude } = pos.coords;
       const timestamp = Math.floor(Date.now() / 1000);
@@ -192,22 +193,23 @@
         .then(res => res.json())
         .then(json => {
           const t = json.data.timings;
+
           tbodyEl.innerHTML = `
             <tr>
-              <td>${t.Fajr}</td>
-              <td>${t.Dhuhr}</td>
-              <td>${t.Asr}</td>
-              <td>${t.Maghrib}</td>
-              <td>${t.Isha}</td>
+              <td>${adjustTime(t.Fajr)}</td>
+              <td>${adjustTime(t.Dhuhr)}</td>
+              <td>${adjustTime(t.Asr)}</td>
+              <td>${adjustTime(t.Maghrib)}</td>
+              <td>${adjustTime(t.Isha)}</td>
             </tr>`;
           tableEl.style.display = '';
 
           const prayerTimes = [
-            { name: "Subuh", time: t.Fajr },
-            { name: "Dzuhur", time: t.Dhuhr },
-            { name: "Ashar", time: t.Asr },
-            { name: "Maghrib", time: t.Maghrib },
-            { name: "Isya", time: t.Isha }
+            { name: "Subuh", time: adjustTime(t.Fajr) },
+            { name: "Dzuhur", time: adjustTime(t.Dhuhr) },
+            { name: "Ashar", time: adjustTime(t.Asr) },
+            { name: "Maghrib", time: adjustTime(t.Maghrib) },
+            { name: "Isya", time: adjustTime(t.Isha) }
           ];
 
           const now = new Date();
@@ -224,14 +226,13 @@
           }
 
           if (!nextPrayer) {
-            const [hour, minute] = t.Fajr.split(":").map(Number);
+            const [hour, minute] = prayerTimes[0].time.split(":").map(Number);
             const prayerTime = new Date(now);
             prayerTime.setDate(prayerTime.getDate() + 1);
             prayerTime.setHours(hour, minute, 0, 0);
-            nextPrayer = { name: "Subuh", time: t.Fajr, date: prayerTime };
+            nextPrayer = { ...prayerTimes[0], date: prayerTime };
           }
 
-          // Tampilkan tabel hitung mundur saja
           countdownTable.style.display = '';
 
           function updateCountdown() {
@@ -240,7 +241,6 @@
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
             const remaining = `${hours}j ${minutes}m ${seconds}d`;
             countdownBody.innerHTML = `
               <tr>
@@ -264,5 +264,6 @@
     } else {
       showError('Geolocation tidak didukung browser Anda.');
     }
-  </script></body>
+  </script>
+</body>
 </html>
