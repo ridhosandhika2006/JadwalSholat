@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -37,7 +38,7 @@
     .table-container {
       width: 100%;
       max-width: 700px;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: 0 4px 12px var(--card-shadow);
@@ -54,6 +55,20 @@
       white-space: nowrap;
       border-bottom: 1px solid #e5e7eb;
       font-size: 0.9rem;
+    }
+    /* Khusus tabel info: ukuran font kecil, padding horizontal lebih besar, dan spasi teks */
+    #info th, #info td {
+      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      line-height: 1.4;
+    }
+    /* Atur lebar kolom agar tidak terlalu sempit */
+    #info th:nth-child(1), #info td:nth-child(1),
+    #info th:nth-child(2), #info td:nth-child(2),
+    #info th:nth-child(3), #info td:nth-child(3),
+    #info th:nth-child(4), #info td:nth-child(4),
+    #info th:nth-child(5), #info td:nth-child(5) {
+      width: 1000%;
     }
     thead {
       background: var(--primary-color);
@@ -74,34 +89,68 @@
     @media (max-width: 600px) {
       h1 { font-size: 1.75rem; }
       th, td { padding: 0.4rem; font-size: 0.8rem; }
+      /* Override untuk tabel info di mobile */
+      #info th, #info td { font-size: 7.7px; padding: 7.1px 7.1px; }
     }
   </style>
 </head>
 <body>
   <h1>Jadwal Sholat Semua Daerah</h1>
+
   <div class="table-container" id="time-table">
-    <table><thead><tr><th>Waktu Sekarang</th></tr></thead><tbody><tr><td id="real-time"></td></tr></tbody></table>
+    <table>
+      <thead><tr><th>Waktu Sekarang</th></tr></thead>
+      <tbody><tr><td id="real-time"></td></tr></tbody>
+    </table>
   </div>
+
   <div class="table-container" id="info">
-    <table><thead><tr><th>Tanggal</th><th>Tanggal Hijriah</th><th>Latitude</th><th>Longitude</th></tr></thead><tbody><tr><td id="gregorian-date"></td><td id="hijri-date"></td><td id="latitude"></td><td id="longitude"></td></tr></tbody></table>
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Tanggal Hijriah</th>
+          <th>Kota</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="gregorian-date"></td>
+          <td id="hijri-date"></td>
+          <td id="city"></td>
+          <td id="latitude"></td>
+          <td id="longitude"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+
   <div class="table-container" id="jadwal">
-    <table><thead><tr><th>Subuh</th><th>Dzuhur</th><th>Ashar</th><th>Maghrib</th><th>Isya</th></tr></thead><tbody></tbody></table>
+    <table>
+      <thead>
+        <tr><th>Subuh</th><th>Dzuhur</th><th>Ashar</th><th>Maghrib</th><th>Isya</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
+
   <div class="table-container" id="countdown-table">
-    <table><thead><tr><th>Waktu</th><th>Sisa</th></tr></thead><tbody id="countdown-body"></tbody></table>
+    <table>
+      <thead><tr><th>Waktu</th><th>Sisa</th></tr></thead>
+      <tbody id="countdown-body"></tbody>
+    </table>
   </div>
+
   <footer>
     <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
     <p>Hubungi untuk dukungan <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini</a></p>
   </footer>
+
   <script>
-    const timeContainer = document.getElementById('time-table');
     const realTimeEl = document.getElementById('real-time');
-    const infoTable = document.getElementById('info');
-    const jadwalTable = document.getElementById('jadwal');
-    const tbodyEl = jadwalTable.querySelector('tbody');
-    const countdownTable = document.getElementById('countdown-table');
+    const tbodyEl = document.querySelector('#jadwal tbody');
     const countdownBody = document.getElementById('countdown-body');
 
     const bulanHijriah = [
@@ -109,55 +158,71 @@
       "Jumadil Awal", "Jumadil Akhir", "Rajab", "Syaban",
       "Ramadhan", "Syawal", "Zulkaidah", "Zulhijah"
     ];
-
     const hijriFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', { day: 'numeric', month: 'numeric', year: 'numeric' });
+
+    function fetchCityName(lat, lon) {
+      return fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+        .then(res => res.json())
+        .then(data => data.address.city || data.address.town || data.address.village || '');
+    }
 
     function adjustTime(timeStr, offsetMinutes = 2) {
       const [hour, minute] = timeStr.split(':').map(Number);
       const date = new Date(); date.setHours(hour); date.setMinutes(minute + offsetMinutes);
-      return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     }
 
     function updateDateTimeElements() {
       const now = new Date();
       realTimeEl.textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      const gregDateStr = now.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
-      document.getElementById('gregorian-date').textContent = gregDateStr;
-      const hijriParts = hijriFormatter.formatToParts(now);
-      let dayHijri, monthIdx, yearHijri;
-      hijriParts.forEach(part => {
-        if (part.type === 'day') dayHijri = part.value;
-        if (part.type === 'month') monthIdx = parseInt(part.value, 10);
-        if (part.type === 'year') yearHijri = part.value;
+      document.getElementById('gregorian-date').textContent = now.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+      let day, monthIdx, year;
+      hijriFormatter.formatToParts(now).forEach(p => {
+        if (p.type === 'day') day = p.value;
+        if (p.type === 'month') monthIdx = parseInt(p.value, 10);
+        if (p.type === 'year') year = p.value;
       });
-      const tanggalHijriah = `${dayHijri} ${bulanHijriah[monthIdx-1]} ${yearHijri} H`;
-      document.getElementById('hijri-date').textContent = tanggalHijriah;
+      document.getElementById('hijri-date').textContent = `${day} ${bulanHijriah[monthIdx-1]} ${year} H`;
     }
-    updateDateTimeElements();
-    setInterval(updateDateTimeElements, 1000);
+    updateDateTimeElements(); setInterval(updateDateTimeElements, 1000);
+
+    function scheduleNotifications(prayerTimes) {
+      const now = new Date();
+      prayerTimes.forEach(p => {
+        const [h, m] = p.time.split(':').map(Number);
+        let notifyTime = new Date(now);
+        notifyTime.setHours(h, m, 0, 0);
+        if (notifyTime < now) notifyTime.setDate(notifyTime.getDate() + 1);
+        const delay = notifyTime - now - 5 * 60 * 1000;
+        if (delay > 0 && Notification.permission === 'granted') {
+          setTimeout(() => {
+            new Notification(`Waktu ${p.name}`, { body: `Segera tiba: ${p.name} (${p.time})`, icon: '/icons/icon-192.png' });
+          }, delay);
+        }
+      });
+    }
 
     function success(pos) {
       const { latitude, longitude } = pos.coords;
       document.getElementById('latitude').textContent = latitude.toFixed(4);
       document.getElementById('longitude').textContent = longitude.toFixed(4);
+      fetchCityName(latitude, longitude).then(city => {
+        document.getElementById('city').textContent = city;
+      });
       const timestamp = Math.floor(Date.now() / 1000);
-
       fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${latitude}&longitude=${longitude}&method=11`)
         .then(res => res.json())
         .then(json => {
           const t = json.data.timings;
-          tbodyEl.innerHTML = `<tr><td>${adjustTime(t.Fajr)}</td><td>${adjustTime(t.Dhuhr)}</td><td>${adjustTime(t.Asr)}</td><td>${adjustTime(t.Maghrib)}</td><td>${adjustTime(t.Isha)}</td></tr>`;
-
           const prayerTimes = [
-            { name:'Subuh', time:adjustTime(t.Fajr) },
-            { name:'Dzuhur', time:adjustTime(t.Dhuhr) },
-            { name:'Ashar', time:adjustTime(t.Asr) },
-            { name:'Maghrib', time:adjustTime(t.Maghrib) },
-            { name:'Isya', time:adjustTime(t.Isha) }
+            { name: 'Subuh', time: adjustTime(t.Fajr) },
+            { name: 'Dzuhur', time: adjustTime(t.Dhuhr) },
+            { name: 'Ashar', time: adjustTime(t.Asr) },
+            { name: 'Maghrib', time: adjustTime(t.Maghrib) },
+            { name: 'Isya', time: adjustTime(t.Isha) }
           ];
-
-          let nextPrayer = null;
-          const now = new Date();
+          tbodyEl.innerHTML = `<tr>${prayerTimes.map(p => `<td>${p.time}</td>`).join('')}</tr>`;
+          let nextPrayer = null; const now = new Date();
           for (const p of prayerTimes) {
             const [h, m] = p.time.split(':').map(Number);
             const dt = new Date(now); dt.setHours(h, m, 0, 0);
@@ -165,20 +230,19 @@
           }
           if (!nextPrayer) {
             const [h, m] = prayerTimes[0].time.split(':').map(Number);
-            const dt = new Date(now); dt.setDate(dt.getDate()+1); dt.setHours(h, m, 0, 0);
+            const dt = new Date(now); dt.setDate(dt.getDate() + 1); dt.setHours(h, m, 0, 0);
             nextPrayer = { ...prayerTimes[0], date: dt };
           }
-
           function updateCountdown() {
             const diff = Math.max(0, nextPrayer.date - new Date());
-            const hours = Math.floor(diff/(1000*60*60));
-            const minutes = Math.floor((diff%(1000*60*60))/(1000*60));
-            const seconds = Math.floor((diff%(1000*60))/1000);
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             countdownBody.innerHTML = `<tr><td>${nextPrayer.name}</td><td>${hours}j ${minutes}m ${seconds}d</td></tr>`;
           }
-
-          updateCountdown();
-          setInterval(updateCountdown, 1000);
+          updateCountdown(); setInterval(updateCountdown, 1000);
+          if ('Notification' in window) Notification.requestPermission();
+          scheduleNotifications(prayerTimes);
         })
         .catch(err => console.error('Gagal memuat jadwal sholat:', err));
     }
@@ -192,12 +256,9 @@
     } else {
       const lat = parseFloat(prompt('Masukkan latitude Anda:'));
       const lon = parseFloat(prompt('Masukkan longitude Anda:'));
-      if (!isNaN(lat) && !isNaN(lon)) {
-        success({ coords: { latitude: lat, longitude: lon } });
-      } else {
-        console.error('Input koordinat tidak valid.');
-      }
+      if (!isNaN(lat) && !isNaN(lon)) success({ coords: { latitude: lat, longitude: lon } });
+      else console.error('Input koordinat tidak valid.');
     }
   </script>
 </body>
-</html>
+</html> 
