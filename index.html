@@ -180,10 +180,181 @@
     }
     function error(err) {
       console.error('Geolocation Error', err);
-      showError('Tidak dapat memperoleh lokasi: ' + err.message);
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jadwal Sholat Semua Daerah</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #ffffff;
+      --bg-gradient-start: #eef2ff;
+      --bg-gradient-end: #e0e7ff;
+      --text-color: #1f2937;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --radius: 0.75rem;
+      --transition: 0.3s ease;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-color);
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0 1rem;
+    }
+    h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem; text-align: center; }
+    /* Hide the status section so coordinates outside the table are removed */
+    #status { display: none; }
+    #info, #jadwal, #time-table {
+      width: 100%; max-width: 600px; margin: 0.5rem auto;
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--card-shadow); overflow-x: auto;
+    }
+    #info table, #jadwal table, #time-table table {
+      table-layout: fixed; width: 100%; border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.75rem 1rem; text-align: center;
+      white-space: nowrap; border-bottom: 1px solid #e5e7eb;
+    }
+    thead { background: var(--primary-color); }
+    thead th { color: var(--secondary-color); font-weight: 600; }
+    #jadwal tbody tr { transition: background var(--transition); }
+    #jadwal tbody tr:hover { background: rgba(79, 70, 229, 0.05); }
+    #countdown-table {
+      width: 100%; max-width: 400px; margin: 1rem auto;
+      border-collapse: collapse; background: var(--card-bg);
+      border-radius: var(--radius); box-shadow: 0 4px 12px var(--card-shadow);
+      overflow: hidden;
+    }
+    #countdown-table th, #countdown-table td {
+      padding: 0.75rem 1rem; text-align: center;
+      border-bottom: 1px solid #e5e7eb; white-space: nowrap;
+    }
+    #countdown-table thead { background: var(--primary-color); }
+    #countdown-table thead th { color: var(--secondary-color); font-weight: 600; }
+    footer { margin-top: 2rem; text-align: center; font-size: 0.875rem; color: #6b7280; }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.75rem; }
+      th, td { padding: 0.5rem; font-size: 0.875rem; }
+    }
+    @media (max-width: 400px) {
+      th, td { padding: 0.4rem; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Jadwal Sholat Semua Daerah</h1>
+  <!-- Status removed to hide coordinates outside table -->
+  <!-- Real-time clock table -->
+  <div id="time-table" style="display:none;">
+    <table><thead><tr><th>Waktu Sekarang</th></tr></thead><tbody><tr><td id="real-time"></td></tr></tbody></table>
+  </div>  <!-- Informasi: Tanggal, Hijri, Koordinat -->  <table id="info" style="display:none;"><thead><tr><th>Tanggal</th><th>Tanggal Hijriah</th><th>Latitude</th><th>Longitude</th></tr></thead><tbody><tr><td id="gregorian-date"></td><td id="hijri-date"></td><td id="latitude"></td><td id="longitude"></td></tr></tbody></table>  <!-- Jadwal Sholat -->  <table id="jadwal" style="display:none;"><thead><tr><th>Subuh</th><th>Dzuhur</th><th>Ashar</th><th>Maghrib</th><th>Isya</th></tr></thead><tbody></tbody></table>  <!-- Countdown -->  <table id="countdown-table" style="display:none;"><thead><tr><th>Waktu</th><th>Sisa</th></tr></thead><tbody id="countdown-body"></tbody></table>  <footer>
+    <p>&copy; Studioofficialridho 2025 || All rights reserved.</p>
+    <p>Hubungi untuk dukungan <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank" rel="noopener noreferrer">Klik di sini</a></p>
+  </footer>  <script>
+    const timeContainer = document.getElementById('time-table');
+    const realTimeEl = document.getElementById('real-time');
+    const infoTable = document.getElementById('info');
+    const jadwalTable = document.getElementById('jadwal');
+    const tbodyEl = jadwalTable.querySelector('tbody');
+    const countdownTable = document.getElementById('countdown-table');
+    const countdownBody = document.getElementById('countdown-body');
+
+    const bulanHijriah = [
+      "Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir",
+      "Jumadil Awal", "Jumadil Akhir", "Rajab", "Syaban",
+      "Ramadhan", "Syawal", "Zulkaidah", "Zulhijah"
+    ];
+
+    const hijriFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', { day: 'numeric', month: 'numeric', year: 'numeric' });
+
+    function adjustTime(timeStr, offsetMinutes = 2) {
+      const [hour, minute] = timeStr.split(':').map(Number);
+      const date = new Date(); date.setHours(hour);
+      date.setMinutes(minute + offsetMinutes);
+      return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
     }
 
-    // Geolocation dengan fallback manual
+    function updateDateTimeElements() {
+      const now = new Date();
+      realTimeEl.textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      timeContainer.style.display = '';
+
+      const gregDateStr = now.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('gregorian-date').textContent = gregDateStr;
+      infoTable.style.display = '';
+
+      const hijriParts = hijriFormatter.formatToParts(now);
+      let dayHijri, monthIdx, yearHijri;
+      hijriParts.forEach(part => {
+        if (part.type === 'day') dayHijri = part.value;
+        if (part.type === 'month') monthIdx = parseInt(part.value, 10);
+        if (part.type === 'year') yearHijri = part.value;
+      });
+      const tanggalHijriah = `${dayHijri} ${bulanHijriah[monthIdx-1]} ${yearHijri} H`;
+      document.getElementById('hijri-date').textContent = tanggalHijriah;
+    }
+    updateDateTimeElements();
+    setInterval(updateDateTimeElements, 1000);
+
+    function success(pos) {
+      const { latitude, longitude } = pos.coords;
+      const timestamp = Math.floor(Date.now() / 1000);
+      document.getElementById('latitude').textContent = latitude.toFixed(4);
+      document.getElementById('longitude').textContent = longitude.toFixed(4);
+
+      fetch(`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${latitude}&longitude=${longitude}&method=11`)
+        .then(res => res.json())
+        .then(json => {
+          const t = json.data.timings;
+          tbodyEl.innerHTML = `<tr><td>${adjustTime(t.Fajr)}</td><td>${adjustTime(t.Dhuhr)}</td><td>${adjustTime(t.Asr)}</td><td>${adjustTime(t.Maghrib)}</td><td>${adjustTime(t.Isha)}</td></tr>`;
+          jadwalTable.style.display = '';
+
+          const prayerTimes = [
+            { name:'Subuh', time:adjustTime(t.Fajr) },
+            { name:'Dzuhur', time:adjustTime(t.Dhuhr) },
+            { name:'Ashar', time:adjustTime(t.Asr) },
+            { name:'Maghrib', time:adjustTime(t.Maghrib) },
+            { name:'Isya', time:adjustTime(t.Isha) }
+          ];
+          let nextPrayer = null;
+          const now = new Date();
+          for (const p of prayerTimes) {
+            const [h, m] = p.time.split(':').map(Number);
+            const dt = new Date(now); dt.setHours(h, m, 0, 0);
+            if (dt > now) { nextPrayer = { ...p, date: dt }; break; }
+          }
+          if (!nextPrayer) {
+            const [h, m] = prayerTimes[0].time.split(':').map(Number);
+            const dt = new Date(now); dt.setDate(dt.getDate()+1); dt.setHours(h, m, 0, 0);
+            nextPrayer = { ...prayerTimes[0], date: dt };
+          }
+          countdownTable.style.display = '';
+          function updateCountdown() {
+            const diff = Math.max(0, nextPrayer.date - new Date());
+            const hours = Math.floor(diff/(1000*60*60));
+            const minutes = Math.floor((diff%(1000*60*60))/(1000*60));
+            const seconds = Math.floor((diff%(1000*60))/1000);
+            countdownBody.innerHTML = `<tr><td>${nextPrayer.name}</td><td>${hours}j ${minutes}m ${seconds}d</td></tr>`;
+          }
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
+        })
+        .catch(err => console.error('Gagal memuat jadwal sholat:', err));
+    }
+    function error(err) {
+      console.error('Geolocation Error', err);
+    }
+
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(success, error, { enableHighAccuracy: true });
     } else {
@@ -192,7 +363,7 @@
       if (!isNaN(lat) && !isNaN(lon)) {
         success({ coords: { latitude: lat, longitude: lon } });
       } else {
-        showError('Input koordinat tidak valid.');
+        console.error('Input koordinat tidak valid.');
       }
     }
   </script></body>
