@@ -17,7 +17,6 @@
       --radius: 0.75rem;
       --transition: 0.3s ease;
     }
-
     /* dark mode variables */
     :root.dark {
       --primary-color: #8b5cf6;
@@ -28,7 +27,6 @@
       --card-bg: #1e1e1e;
       --card-shadow: rgba(0, 0, 0, 0.5);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -42,28 +40,10 @@
       position: relative;
     }
     h1 { font-size: 2rem; color: var(--primary-color); margin: 1rem 0; text-align: center; }
-    .table-container { 
-      width: 100%; 
-      max-width: 700px; 
-      margin-bottom: 1.5rem; 
-      background: var(--card-bg); 
-      border-radius: var(--radius); 
-      box-shadow: 0 4px 12px var(--card-shadow); 
-      overflow-x: auto; 
-    }
+    .table-container { width: 100%; max-width: 700px; margin-bottom: 1.5rem; background: var(--card-bg); border-radius: var(--radius); box-shadow: 0 4px 12px var(--card-shadow); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    th, td { 
-      padding: 0.5rem; 
-      text-align: center; 
-      white-space: nowrap; 
-      border-bottom: 1px solid #e5e7eb; 
-      font-size: 0.9rem; 
-    }
-    #info th, #info td { 
-      font-size: 0.75rem; 
-      padding: 0.4rem 1rem; 
-      line-height: 1.4; 
-    }
+    th, td { padding: 0.5rem; text-align: center; white-space: nowrap; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+    #info th, #info td { font-size: 0.75rem; padding: 0.4rem 1rem; line-height: 1.4; }
     thead { background: var(--primary-color); }
     thead th { color: var(--secondary-color); font-weight: 600; }
     #countdown-table { max-width: 400px; }
@@ -142,34 +122,31 @@
       th, td { padding: 0.4rem; font-size: 0.8rem; }
       #info th, #info td { font-size: 7.7px; padding: 7.1px; }
     }
-
     /* Modal Styles */
-    .modal-backdrop { 
-      position: fixed; top: 0; left: 0; 
-      width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.5); 
-      display: flex; align-items: center; justify-content: center; 
-      z-index: 1000; 
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
-    .modal { 
-      background: var(--card-bg); 
-      padding: 2rem; 
-      border-radius: var(--radius); 
-      box-shadow: 0 4px 12px var(--card-shadow); 
-      max-width: 90%; width: 320px; 
-      text-align: center; 
+    .modal {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--card-shadow);
+      max-width: 90%;
+      width: 320px;
+      text-align: center;
     }
     .modal h2 { margin-bottom: 1rem; color: var(--primary-color); }
     .modal p { margin-bottom: 1.5rem; }
-    .modal button { 
-      display: block; width: 100%; 
-      margin-bottom: 0.75rem; 
-      padding: 0.75rem; 
-      border: none; 
-      border-radius: var(--radius); 
-      font-size: 1rem; cursor: pointer; 
-      transition: background var(--transition); 
-    }
+    .modal button { display: block; width: 100%; margin-bottom: 0.75rem; padding: 0.75rem; border: none; border-radius: var(--radius); font-size: 1rem; cursor: pointer; transition: background var(--transition); }
     .btn-primary { background: var(--primary-color); color: var(--secondary-color); }
     .btn-secondary { background: #e5e7eb; color: var(--text-color); }
     .btn-danger { background: #ef4444; color: var(--secondary-color); }
@@ -179,12 +156,12 @@
   <h1>AnnurIslamic</h1>
 
   <!-- Toggle Button and Sidebar -->
-  <button id="menu-toggle">
+  <button id="menu-toggle" aria-controls="sidebar" aria-expanded="false">
     <span class="bar"></span>
     <span class="bar"></span>
     <span class="bar"></span>
   </button>
-  <nav id="sidebar">
+  <nav id="sidebar" aria-hidden="true">
     <h3>Menu</h3>
     <ul>
       <li><a href="#jadwal">Sholat</a></li>
@@ -195,13 +172,12 @@
       <li><a href="#" id="open-settings">Pengaturan</a></li>
     </ul>
   </nav>
-
   <footer>© AnnurIslamic 2025 ||Support By: Mediaga Group || Hubungi <a href="https://ridhosandhika2006.github.io/Website-Portfolio/" target="_blank">klik di sini</a></footer>
 
   <!-- Location Permission Modal -->
   <div id="modal-location" class="modal-backdrop">
-    <div class="modal">
-      <h2>Izin Lokasi</h2>
+    <div class="modal" role="dialog" aria-labelledby="modal-location-title" aria-modal="true">
+      <h2 id="modal-location-title">Izin Lokasi</h2>
       <p>AnnurIslamic memerlukan akses lokasi untuk menampilkan jadwal sholat sesuai daerah Anda.</p>
       <button id="loc-always" class="btn-primary">Saat Aplikasi Digunakan</button>
       <button id="loc-once" class="btn-secondary">Hanya Izin Sekali</button>
@@ -211,8 +187,8 @@
 
   <!-- Notification Permission Modal -->
   <div id="modal-notification" class="modal-backdrop" style="display:none;">
-    <div class="modal">
-      <h2>Izin Notifikasi</h2>
+    <div class="modal" role="dialog" aria-labelledby="modal-notification-title" aria-modal="true">
+      <h2 id="modal-notification-title">Izin Notifikasi</h2>
       <p>AnnurIslamic dapat mengirimkan pengingat waktu sholat 5 menit sebelum waktu tiba.</p>
       <button id="notif-allow" class="btn-primary">Izinkan</button>
       <button id="notif-block" class="btn-danger">Blokir</button>
@@ -221,7 +197,7 @@
 
   <!-- About Modal -->
   <div id="modal-about" class="modal-backdrop" style="display:none;">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-labelledby="about-title" aria-modal="true">
       <h2 id="about-title">Tentang Aplikasi</h2>
       <p id="about-text">AnnurIslamic adalah aplikasi jadwal sholat dan informasi Islami.</p>
       <button id="about-close" class="btn-secondary">Tutup</button>
@@ -231,51 +207,54 @@
   <!-- Main Content Tables -->
   <div class="table-container" id="time-table">
     <table>
-      <thead>
-        <tr><th>Waktu Sekarang</th></tr>
-      </thead>
-      <tbody>
-        <tr><td id="real-time"></td></tr>
-      </tbody>
+      <thead><tr><th>Waktu Sekarang</th></tr></thead>
+      <tbody><tr><td id="real-time"></td></tr></tbody>
     </table>
   </div>
   <div class="table-container" id="info">
     <table>
-      <thead>
-        <tr><th>Tanggal</th><th>Tanggal Hijriah</th><th>Kota</th><th>Latitude</th><th>Longitude</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td id="gregorian-date"></td>
-          <td id="hijri-date"></td>
-          <td id="city"></td>
-          <td id="latitude"></td>
-          <td id="longitude"></td>
-        </tr>
-      </tbody>
+      <thead><tr><th>Tanggal</th><th>Tanggal Hijriah</th><th>Kota</th><th>Latitude</th><th>Longitude</th></tr></thead>
+      <tbody><tr><td id="gregorian-date"></td><td id="hijri-date"></td><td id="city"></td><td id="latitude"></td><td id="longitude"></td></tr></tbody>
     </table>
   </div>
   <div class="table-container" id="jadwal">
     <table>
-      <thead>
-        <tr><th>Subuh</th><th>Dzuhur</th><th>Ashar</th><th>Maghrib</th><th>Isya</th></tr>
-      </thead>
+      <thead><tr><th>Subuh</th><th>Dzuhur</th><th>Ashar</th><th>Maghrib</th><th>Isya</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
   <div class="table-container" id="countdown-table">
     <table>
-      <thead>
-        <tr><th>Waktu</th><th>Sisa</th></tr>
-      </thead>
+      <thead><tr><th>Waktu</th><th>Sisa</th></tr></thead>
       <tbody id="countdown-body"></tbody>
     </table>
   </div>
 
   <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+      });
+    }
+
     // Modal logic (lokasi & notifikasi)
-    const hideModal = id => document.getElementById(id).style.display = 'none';
-    const showModal = id => document.getElementById(id).style.display = 'flex';
+    const hideModal = id => {
+      document.getElementById(id).style.display = 'none';
+      const modal = document.getElementById(id);
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    const showModal = id => {
+      document.getElementById(id).style.display = 'flex';
+      const modal = document.getElementById(id);
+      modal.setAttribute('aria-hidden', 'false');
+      modal.querySelector('button').focus(); // Move focus to the first button in the modal
+    };
 
     document.getElementById('loc-always').onclick = () => { hideModal('modal-location'); requestLocation({enableHighAccuracy:true}); };
     document.getElementById('loc-once').onclick = () => { hideModal('modal-location'); requestLocation(); };
@@ -301,98 +280,105 @@
 
     // Waktu & tanggal
     const realTimeEl = document.getElementById('real-time'),
-          tbodyEl = document.querySelector('#jadwal tbody'),
+          tbodyEl    = document.querySelector('#jadwal tbody'),
           countdownBody = document.getElementById('countdown-body');
-    const bulanHijriah = ["Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Syaban", "Ramadhan", "Syawal", "Zulkaidah", "Zulhijah"];
-    const hijriFmt = new Intl.DateTimeFormat('en-TN-u-ca-islamic', { day: 'numeric', month: 'numeric', year: 'numeric' });
+    const bulanHijriah = ["Muharram","Safar","Rabiul Awal","Rabiul Akhir","Jumadil Awal","Jumadil Akhir","Rajab","Syaban","Ramadhan","Syawal","Zulkaidah","Zulhijah"];
+    const hijriFmt = new Intl.DateTimeFormat('en-TN-u-ca-islamic',{day:'numeric',month:'numeric',year:'numeric'});
 
     setInterval(() => {
       const now = new Date();
-      realTimeEl.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      document.getElementById('gregorian-date').textContent = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      
-      let d, m, y;
+      realTimeEl.textContent = now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      document.getElementById('gregorian-date').textContent = now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      let d,m,y;
       hijriFmt.formatToParts(now).forEach(p => {
-        if (p.type === 'day') d = p.value;
-        if (p.type === 'month') m = parseInt(p.value);
-        if (p.type === 'year') y = p.value;
+        if (p.type==='day') d=p.value;
+        if (p.type==='month') m=parseInt(p.value);
+        if (p.type==='year') y=p.value;
       });
-      document.getElementById('hijri-date').textContent = `${d} ${bulanHijriah[m - 1]} ${y} H`;
-    }, 1000);
+      document.getElementById('hijri-date').textContent = `${d} ${bulanHijriah[m-1]} ${y} H`;
+    },1000);
 
     // Ambil jadwal sholat
     function fetchCityAndTimings(lat, lon) {
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-        .then(r => r.json())
-        .then(d => document.getElementById('city').textContent = d.address.city || d.address.town || d.address.village || '');
+        .then(r => {
+          if (!r.ok) throw new Error('Network response was not ok'); // Handle fetch error
+          return r.json()
+        })
+        .then(d => document.getElementById('city').textContent = d.address.city||d.address.town||d.address.village||'')
+        .catch(error => console.error('Error fetching city:', error)); // Log error
 
-      const ts = Math.floor(Date.now() / 1000);
+      const ts = Math.floor(Date.now()/1000);
       fetch(`https://api.aladhan.com/v1/timings/${ts}?latitude=${lat}&longitude=${lon}&method=11`)
-        .then(r => r.json())
+        .then(r => {
+          if (!r.ok) throw new Error('Network response was not ok'); // Handle fetch error
+          return r.json();
+        })
         .then(j => {
           const t = j.data.timings;
           window.prayerTimes = [
-            { name: 'Subuh', time: adjust(t.Fajr) },
-            { name: 'Dzuhur', time: adjust(t.Dhuhr) },
-            { name: 'Ashar', time: adjust(t.Asr) },
-            { name: 'Maghrib', time: adjust(t.Maghrib) },
-            { name: 'Isya', time: adjust(t.Isha) }
+            {name:'Subuh',   time:adjust(t.Fajr)},
+            {name:'Dzuhur',  time:adjust(t.Dhuhr)},
+            {name:'Ashar',   time:adjust(t.Asr)},
+            {name:'Maghrib', time:adjust(t.Maghrib)},
+            {name:'Isya',    time:adjust(t.Isha)}
           ];
           tbodyEl.innerHTML = `<tr>${window.prayerTimes.map(p => `<td>${p.time}</td>`).join('')}</tr>`;
           scheduleCountdown();
         })
-        .catch(error => console.error('Error fetching prayer times:', error));
+        .catch(error => console.error('Error fetching prayer times:', error)); // Log error
     }
 
     function adjust(ts) {
-      const [h, m] = ts.split(':').map(Number);
-      const d = new Date();
-      d.setHours(h);
-      d.setMinutes(m + 2);
-      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      const [h,m] = ts.split(':').map(Number),
+            d = new Date();
+      d.setHours(h); d.setMinutes(m + 2); // Adjust time for my location
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     }
-
+    
     function scheduleCountdown() {
       const now = new Date();
       let next = window.prayerTimes.find(p => {
-        const [h, m] = p.time.split(':').map(Number);
-        const d = new Date(now);
-        d.setHours(h, m, 0);
+        const [h,m] = p.time.split(':').map(Number), d = new Date(now);
+        d.setHours(h,m,0);
         return d > now;
       }) || window.prayerTimes[0];
 
-      const nextTime = new Date(now);
-      const [nh, nm] = next.time.split(':').map(Number);
-      nextTime.setHours(nh, nm, 0);
+      const nextTime = new Date(now),
+            [nh,nm] = next.time.split(':').map(Number);
+      nextTime.setHours(nh,nm,0);
       if (nextTime < now) nextTime.setDate(nextTime.getDate() + 1);
 
       setInterval(() => {
-        const diff = Math.max(0, nextTime - new Date());
-        const h = ~~(diff / 3600000);
-        const m = ~~((diff % 3600000) / 60000);
-        const s = ~~((diff % 60000) / 1000);
+        const diff = Math.max(0, nextTime - new Date()),
+              h = ~~(diff/3600000),
+              m = ~~((diff%3600000)/60000),
+              s = ~~((diff%60000)/1000);
         countdownBody.innerHTML = `<tr><td>${next.name}</td><td>${h}j ${m}m ${s}d</td></tr>`;
       }, 1000);
-
+      
       if (Notification.permission === 'granted') {
         window.prayerTimes.forEach(p => {
-          const [h, m] = p.time.split(':').map(Number);
-          const d = new Date();
-          d.setHours(h, m, 0);
+          const [h,m] = p.time.split(':').map(Number), d = new Date();
+          d.setHours(h,m,0);
           if (d < new Date()) d.setDate(d.getDate() + 1);
-          setTimeout(() => new Notification(`Waktu ${p.name}`, { body: `Segera tiba: ${p.name} (${p.time})` }),
-            d - new Date() - 300000);
+          setTimeout(() => new Notification(`Waktu ${p.name}`, {body: `Segera tiba: ${p.name} (${p.time})`}),
+                     d - new Date() - 300000);
         });
       }
     }
 
     // Toggle sidebar menu
-    const btn = document.getElementById('menu-toggle');
-    const side = document.getElementById('sidebar');
+    const btn  = document.getElementById('menu-toggle'),
+          side = document.getElementById('sidebar');
+    
     btn.addEventListener('click', () => {
       side.classList.toggle('open');
+      const isOpen = side.classList.contains('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      
       btn.querySelectorAll('.bar').forEach((bar, i) => {
-        if (side.classList.contains('open')) {
+        if (isOpen) {
           if (i === 0) bar.style.transform = 'rotate(45deg) translate(5px,5px)';
           if (i === 1) bar.style.opacity = '0';
           if (i === 2) bar.style.transform = 'rotate(-45deg) translate(5px,-5px)';
@@ -434,14 +420,9 @@
     document.body.appendChild(settingsPanel);
 
     // Open/close settings
-    document.getElementById('open-settings').addEventListener('click', e => {
-      e.preventDefault();
-      settingsPanel.style.display = 'block';
-    });
-    document.getElementById('close-settings').addEventListener('click', () => {
-      settingsPanel.style.display = 'none';
-    });
-
+    document.getElementById('open-settings').addEventListener('click', e => { e.preventDefault(); settingsPanel.style.display='block'; });
+    document.getElementById('close-settings').addEventListener('click', () => { settingsPanel.style.display='none'; });
+    
     // Dark mode logic
     const htmlEl = document.documentElement;
     const darkCheckbox = document.getElementById('toggle-dark');
@@ -462,16 +443,13 @@
       id: { title: 'AnnurIslamic', settings: 'Pengaturan', aboutText: 'AnnurIslamic adalah aplikasi jadwal sholat dan informasi Islami.', close: 'Tutup' },
       en: { title: 'AnnurIslamic', settings: 'Settings', aboutText: 'AnnurIslamic is a prayer times and Islamic info application.', close: 'Close' }
     };
+    
     const selectLang = document.getElementById('select-lang');
     let lang = localStorage.getItem('lang') || 'id';
     selectLang.value = lang;
     applyLang(lang);
-    selectLang.addEventListener('change', () => {
-      lang = selectLang.value;
-      localStorage.setItem('lang', lang);
-      applyLang(lang);
-    });
-
+    selectLang.addEventListener('change', () => { lang = selectLang.value; localStorage.setItem('lang', lang); applyLang(lang); });
+    
     function applyLang(l) {
       const s = strings[l];
       document.querySelector('h1').textContent = s.title;
@@ -488,12 +466,9 @@
       aboutTextEl.textContent = strings[lang].aboutText;
       aboutModal.style.display = 'flex';
     });
-    aboutCloseBtn.addEventListener('click', () => {
-      aboutModal.style.display = 'none'; 
-    });
-    aboutModal.addEventListener('click', e => {
-      if (e.target === aboutModal) aboutModal.style.display = 'none';
-    });
+    
+    aboutCloseBtn.addEventListener('click', () => { aboutModal.style.display = 'none'; });
+    aboutModal.addEventListener('click', e => { if (e.target === aboutModal) aboutModal.style.display = 'none'; });
   </script>
 </body>
 </html>
